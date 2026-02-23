@@ -7,11 +7,19 @@ import { BurgerIngredientsUI } from '../ui/burger-ingredients';
 
 export const BurgerIngredients: FC = () => {
   const dispatch = useDispatch();
-  const { ingredients, loading, error } = useSelector((state) => state.ingredients);
+  const { ingredients, loading, error } = useSelector(
+    (state) => state.ingredients
+  );
 
-  const buns = ingredients.filter((ingredient: TIngredient) => ingredient.type === 'bun');
-  const mains = ingredients.filter((ingredient: TIngredient) => ingredient.type === 'main');
-  const sauces = ingredients.filter((ingredient: TIngredient) => ingredient.type === 'sauce');
+  const buns = ingredients.filter(
+    (ingredient: TIngredient) => ingredient.type === 'bun'
+  );
+  const mains = ingredients.filter(
+    (ingredient: TIngredient) => ingredient.type === 'main'
+  );
+  const sauces = ingredients.filter(
+    (ingredient: TIngredient) => ingredient.type === 'sauce'
+  );
 
   const [currentTab, setCurrentTab] = useState<TTabMode>('bun');
   const titleBunRef = useRef<HTMLHeadingElement>(null);

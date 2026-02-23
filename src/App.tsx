@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConstructorPage } from './pages/constructor-page';
 import { Feed } from './pages/feed';
@@ -11,11 +11,17 @@ import { Register } from './pages/register';
 import { ResetPassword } from './pages/reset-password';
 import { AppHeader } from './components/app-header';
 import { ProtectedRoute } from './components/protected-route';
-import { useSelector } from './services/store';
+import { useDispatch, useSelector } from './services/store';
+import { fetchUser } from './slices/userSlice';
 import '../../index.css';
 
 const App = () => {
+  const dispatch = useDispatch();
   const { user, isAuthChecked } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
 
   if (!isAuthChecked) {
     return null;

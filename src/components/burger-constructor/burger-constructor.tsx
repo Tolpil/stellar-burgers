@@ -20,13 +20,11 @@ export const BurgerConstructor: FC = () => {
 
     dispatch(setOrderRequest(true));
     try {
-      const response = await orderBurgerApi(
-        [
-          constructorItems.bun._id,
-          ...constructorItems.ingredients.map((ingredient) => ingredient._id),
-          constructorItems.bun._id
-        ]
-      );
+      const response = await orderBurgerApi([
+        constructorItems.bun._id,
+        ...constructorItems.ingredients.map((ingredient) => ingredient._id),
+        constructorItems.bun._id
+      ]);
       dispatch(setOrderModalData(response.order));
       dispatch(clearConstructor());
     } catch (error) {

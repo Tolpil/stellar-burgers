@@ -10,9 +10,11 @@ import { Preloader } from '@ui';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { ingredients, loading: isIngredientsLoading, error } = useSelector(
-    (state) => state.ingredients
-  );
+  const {
+    ingredients,
+    loading: isIngredientsLoading,
+    error
+  } = useSelector((state) => state.ingredients);
 
   useEffect(() => {
     dispatch(fetchIngredients());
