@@ -1,4 +1,7 @@
 import { ConstructorPage } from '@pages';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from '../../services/store';
+import { fetchIngredients } from '../../slices/ingredientsSlice';
 import '../../index.css';
 import styles from './app.module.css';
 
@@ -6,10 +9,14 @@ import { AppHeader } from '@components';
 import { Preloader } from '@ui';
 
 const App = () => {
-  /** TODO: взять переменные из стора */
-  const isIngredientsLoading = false;
-  const ingredients = [];
-  const error = null;
+  const dispatch = useDispatch();
+  const { ingredients, loading: isIngredientsLoading, error } = useSelector(
+    (state) => state.ingredients
+  );
+
+  useEffect(() => {
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
   return (
     <div className={styles.app}>
