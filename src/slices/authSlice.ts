@@ -166,8 +166,8 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         localStorage.removeItem('refreshToken');
-                deleteCookie('accessToken');
-                     });
+        deleteCookie('accessToken');
+      });
   },
 
   selectors: {

@@ -11,21 +11,15 @@ import { Register } from './pages/register';
 import { ResetPassword } from './pages/reset-password';
 import { AppHeader } from './components/app-header';
 import { ProtectedRoute } from './components/protected-route';
-import { useDispatch, useSelector } from './services/store';
-import { fetchUser } from './slices/userSlice';
+import { useDispatch } from './services/store';
+import { checkAuth } from './slices/authSlice';
 import '../../index.css';
 
 const App = () => {
   const dispatch = useDispatch();
-  const { isAuthChecked } = useSelector((state) => state.user);
-
   useEffect(() => {
-    dispatch(fetchUser());
+    dispatch(checkAuth());
   }, [dispatch]);
-
-  if (!isAuthChecked) {
-    return null;
-  }
 
   return (
     <BrowserRouter>
@@ -37,7 +31,7 @@ const App = () => {
         <Route
           path='/login'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute unAuthOnly>
               <Login />
             </ProtectedRoute>
           }
@@ -45,7 +39,7 @@ const App = () => {
         <Route
           path='/register'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute unAuthOnly>
               <Register />
             </ProtectedRoute>
           }
@@ -53,7 +47,7 @@ const App = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute unAuthOnly>
               <ForgotPassword />
             </ProtectedRoute>
           }
@@ -61,7 +55,7 @@ const App = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute onlyUnAuth>
+            <ProtectedRoute unAuthOnly>
               <ResetPassword />
             </ProtectedRoute>
           }
