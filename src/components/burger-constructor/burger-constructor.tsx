@@ -67,7 +67,7 @@ export const BurgerConstructor: FC = () => {
   const closeOrderModal = useCallback(() => {
     dispatch(setOrderModalData(null));
     dispatch(resetConstructor());
-      }, [dispatch]);
+  }, [dispatch]);
 
   return (
     <BurgerConstructorUI

@@ -1,40 +1,66 @@
-import React, { FC, memo } from 'react';
-import { Link } from 'react-router-dom';
-import styles from './burger-ingredient.module.css';
+import { FC, memo } from 'react';
+import { Tab } from '@zlden/react-developer-burger-ui-components';
+import styles from './burger-ingredients.module.css';
 
-import {
-  Counter,
-  CurrencyIcon,
-  AddButton
-} from '@zlden/react-developer-burger-ui-components';
+import { BurgerIngredientsUIProps } from './type';
+import { IngredientsCategory } from '@components';
 
-import { TBurgerIngredientUIProps } from './type';
-
-export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
-  ({ ingredient, count, handleAdd, locationState, dragRef }) => {
-    const { image, price, name, _id } = ingredient;
-
-    return (
-      <li className={styles.container} ref={dragRef}>
-        <Link
-          className={styles.article}
-          to={`/ingredients/${_id}`}
-          state={locationState}
-        >
-          {count && <Counter count={count} />}
-          <img className={styles.img} src={image} alt='картинка ингредиента.' />
-          <div className={`${styles.cost} mt-2 mb-2`}>
-            <p className='text text_type_digits-default mr-2'>{price}</p>
-            <CurrencyIcon type='primary' />
-          </div>
-          <p className={`text text_type_main-default ${styles.text}`}>{name}</p>
-        </Link>
-        <AddButton
-          text='Добавить'
-          onClick={handleAdd}
-          extraClass={`${styles.addButton} mt-8`}
+export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = memo(
+  ({
+    currentTab,
+    buns,
+    mains,
+    sauces,
+    titleBunRef,
+    titleMainRef,
+    titleSaucesRef,
+    bunsRef,
+    mainsRef,
+    saucesRef,
+    onTabClick
+  }) => (
+    <section className={styles.burger_ingredients}>
+      <ul className={styles.menu}>
+        <li className={styles.tab}>
+          <Tab value='bun' active={currentTab === 'bun'} onClick={onTabClick}>
+            Булки
+          </Tab>
+        </li>
+        <li className={styles.tab}>
+          <Tab
+            value='sauce'
+            active={currentTab === 'sauce'}
+            onClick={onTabClick}
+          >
+            Соусы
+          </Tab>
+        </li>
+        <li className={styles.tab}>
+          <Tab value='main' active={currentTab === 'main'} onClick={onTabClick}>
+            Начинки
+          </Tab>
+        </li>
+      </ul>
+      <div className={`${styles.content} custom-scroll`}>
+        <IngredientsCategory
+          title='Булки'
+          titleRef={titleBunRef}
+          ingredients={buns}
+          ref={bunsRef}
         />
-      </li>
-    );
-  }
+        <IngredientsCategory
+          title='Соусы'
+          titleRef={titleSaucesRef}
+          ingredients={sauces}
+          ref={saucesRef}
+        />
+        <IngredientsCategory
+          title='Начинки'
+          titleRef={titleMainRef}
+          ingredients={mains}
+          ref={mainsRef}
+        />
+      </div>
+    </section>
+  )
 );

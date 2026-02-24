@@ -22,7 +22,7 @@ export const fetchIngredients = createAsyncThunk(
   }
 );
 
-const ingredientsSlice = createSlice({
+export const ingredientsSlice = createSlice({
   name: 'ingredients',
   initialState,
   reducers: {},
@@ -43,4 +43,10 @@ const ingredientsSlice = createSlice({
   }
 });
 
-export default ingredientsSlice.reducer;
+export const selectIngredients = (state: { ingredients: IngredientsState }) =>
+  state.ingredients.ingredients;
+export const selectLoading = (state: { ingredients: IngredientsState }) =>
+  state.ingredients.loading;
+
+export const ingredientsReducer = ingredientsSlice.reducer;
+export default ingredientsReducer;

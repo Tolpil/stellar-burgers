@@ -29,7 +29,7 @@ export const IngredientDetails: FC = () => {
   useEffect(() => {
     if (!ingredients.length && !isLoading) {
       dispatch(fetchIngredients());
-        }
+    }
   }, [dispatch, ingredients.length, isLoading]);
 
   if (isLoading || (!ingredientData && ingredients.length > 0)) {
