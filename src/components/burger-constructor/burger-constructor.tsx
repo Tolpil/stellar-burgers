@@ -1,4 +1,5 @@
 import { FC, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from '../../services/store';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
@@ -11,12 +12,19 @@ import {
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
   const { constructorItems, orderRequest, orderModalData } = useSelector(
     (state) => state.burgerConstructor
   );
+  const { user } = useSelector((state) => state.user);
 
   const onOrderClick = async () => {
     if (!constructorItems.bun || orderRequest) return;
+    if (!user) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
 
     dispatch(setOrderRequest(true));
     try {
