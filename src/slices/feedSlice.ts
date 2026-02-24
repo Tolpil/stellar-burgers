@@ -1,87 +1,60 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getFeedsApi, getOrdersApi } from '../utils/burger-api';
-import { TOrder } from '@utils-types';
+import { TOrdersData } from '@utils-types';
+import { getFeedsApi } from '../utils/burger-api';
 
-export type TFeedState = {
-  orders: TOrder[];
+type TFeedState = {
+  orders: TOrdersData['orders'];
   total: number;
   totalToday: number;
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
-  profileOrders: TOrder[];
+  loaded: boolean;
 };
 
-export const initialState: TFeedState = {
+const initialState: TFeedState = {
   orders: [],
   total: 0,
   totalToday: 0,
-  loading: false,
+  isLoading: false,
   error: null,
-  profileOrders: []
+  loaded: false
 };
 
-export const fetchFeeds = createAsyncThunk(
-  'feed/fetchFeeds',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await getFeedsApi();
-      return response;
-    } catch (error) {
-      return rejectWithValue('Failed to fetch feeds');
-    }
-  }
-);
+export const fetchFeed = createAsyncThunk('feed/fetch', async () => {
+  const response: TOrdersData = await getFeedsApi();
+  return response;
+});
 
-export const fetchProfileOrders = createAsyncThunk(
-  'feed/fetchProfileOrders',
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await getOrdersApi();
-      return response;
-    } catch (error) {
-      return rejectWithValue('Failed to fetch profile orders');
-    }
-  }
-);
-
-const feedSlice = createSlice({
+export const feedSlice = createSlice({
   name: 'feed',
   initialState,
   reducers: {
-    clearProfileOrders: (state) => {
-      state.profileOrders = [];
+    clearFeed: (state) => {
+      state.orders = [];
+      state.total = 0;
+      state.totalToday = 0;
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchFeeds.pending, (state) => {
-        state.loading = true;
+      .addCase(fetchFeed.pending, (state) => {
+        state.isLoading = true;
         state.error = null;
       })
-      .addCase(fetchFeeds.fulfilled, (state, action) => {
-        state.loading = false;
+      .addCase(fetchFeed.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.orders = action.payload.orders;
         state.total = action.payload.total;
         state.totalToday = action.payload.totalToday;
+        state.loaded = true;
       })
-      .addCase(fetchFeeds.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-      .addCase(fetchProfileOrders.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchProfileOrders.fulfilled, (state, action) => {
-        state.loading = false;
-        state.profileOrders = action.payload;
-      })
-      .addCase(fetchProfileOrders.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
+      .addCase(fetchFeed.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || 'Ошибка загрузки ленты';
       });
   }
 });
 
-export const { clearProfileOrders } = feedSlice.actions;
-export default feedSlice.reducer;
+export const { clearFeed } = feedSlice.actions;
+
+export const feedReducer = feedSlice.reducer;

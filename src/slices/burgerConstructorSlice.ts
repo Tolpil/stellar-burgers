@@ -1,16 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TConstructorIngredient, TIngredient } from '../utils/types';
+import { TAddIngredient, TConstructorState, TOrder } from '@utils-types';
+import { v4 as uuidv4 } from 'uuid';
 
-interface BurgerConstructorState {
-  constructorItems: {
-    bun: TIngredient | null;
-    ingredients: TConstructorIngredient[];
-  };
-  orderRequest: boolean;
-  orderModalData: any | null;
-}
-
-const initialState: BurgerConstructorState = {
+const initialState: TConstructorState = {
   constructorItems: {
     bun: null,
     ingredients: []
@@ -19,21 +11,26 @@ const initialState: BurgerConstructorState = {
   orderModalData: null
 };
 
-const burgerConstructorSlice = createSlice({
+export const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    addIngredient: (state, action: PayloadAction<TConstructorIngredient>) => {
-      if (action.payload.type === 'bun') {
-        state.constructorItems.bun = action.payload;
+    addIngredient: (state, action: PayloadAction<TAddIngredient>) => {
+      const { ingredient } = action.payload;
+
+      if (ingredient.type === 'bun') {
+        state.constructorItems.bun = ingredient;
       } else {
-        state.constructorItems.ingredients.push(action.payload);
+        state.constructorItems.ingredients = [
+          ...state.constructorItems.ingredients,
+          ingredient
+        ];
       }
     },
-    removeIngredient: (state, action: PayloadAction<string>) => {
+    removeIngredient: (state, action: PayloadAction<{ id: string }>) => {
       state.constructorItems.ingredients =
         state.constructorItems.ingredients.filter(
-          (ingredient) => ingredient.id !== action.payload
+          (item) => item.id !== action.payload.id
         );
     },
     moveIngredient: (
@@ -42,19 +39,26 @@ const burgerConstructorSlice = createSlice({
     ) => {
       const { fromIndex, toIndex } = action.payload;
       const ingredients = [...state.constructorItems.ingredients];
-      const [movedItem] = ingredients.splice(fromIndex, 1);
-      ingredients.splice(toIndex, 0, movedItem);
+      const [moved] = ingredients.splice(fromIndex, 1);
+      ingredients.splice(toIndex, 0, moved);
       state.constructorItems.ingredients = ingredients;
     },
-    clearConstructor: (state) => {
-      state.constructorItems = initialState.constructorItems;
+    resetConstructor: (state) => {
+      state.constructorItems.bun = null;
+      state.constructorItems.ingredients = [];
+      state.orderModalData = null;
+    },
+    setOrderModalData: (state, action: PayloadAction<TOrder | null>) => {
+      state.orderModalData = action.payload;
     },
     setOrderRequest: (state, action: PayloadAction<boolean>) => {
       state.orderRequest = action.payload;
-    },
-    setOrderModalData: (state, action: PayloadAction<any | null>) => {
-      state.orderModalData = action.payload;
     }
+  },
+  selectors: {
+    selectConstructorItems: (state) => state.constructorItems,
+    selectOrderRequest: (state) => state.orderRequest,
+    selectOrderModalData: (state) => state.orderModalData
   }
 });
 
@@ -62,9 +66,15 @@ export const {
   addIngredient,
   removeIngredient,
   moveIngredient,
-  clearConstructor,
-  setOrderRequest,
-  setOrderModalData
+  resetConstructor,
+  setOrderModalData,
+  setOrderRequest
 } = burgerConstructorSlice.actions;
 
-export default burgerConstructorSlice.reducer;
+export const {
+  selectConstructorItems,
+  selectOrderRequest,
+  selectOrderModalData
+} = burgerConstructorSlice.selectors;
+
+export const burgerConstructorReducer = burgerConstructorSlice.reducer;

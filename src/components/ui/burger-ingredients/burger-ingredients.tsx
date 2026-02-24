@@ -1,68 +1,40 @@
 import React, { FC, memo } from 'react';
-import { Tab } from '@zlden/react-developer-burger-ui-components';
+import { Link } from 'react-router-dom';
+import styles from './burger-ingredient.module.css';
 
-import styles from './burger-ingredients.module.css';
-import { BurgerIngredientsUIProps } from './type';
-import { IngredientsCategory } from '@components';
+import {
+  Counter,
+  CurrencyIcon,
+  AddButton
+} from '@zlden/react-developer-burger-ui-components';
 
-export const BurgerIngredientsUI: FC<BurgerIngredientsUIProps> = memo(
-  ({
-    currentTab,
-    buns,
-    mains,
-    sauces,
-    titleBunRef,
-    titleMainRef,
-    titleSaucesRef,
-    bunsRef,
-    mainsRef,
-    saucesRef,
-    onTabClick
-  }) => (
-    <>
-      <section className={styles.burger_ingredients}>
-        <nav>
-          <ul className={styles.menu}>
-            <Tab value='bun' active={currentTab === 'bun'} onClick={onTabClick}>
-              Булки
-            </Tab>
-            <Tab
-              value='main'
-              active={currentTab === 'main'}
-              onClick={onTabClick}
-            >
-              Начинки
-            </Tab>
-            <Tab
-              value='sauce'
-              active={currentTab === 'sauce'}
-              onClick={onTabClick}
-            >
-              Соусы
-            </Tab>
-          </ul>
-        </nav>
-        <div className={styles.content}>
-          <IngredientsCategory
-            title='Булки'
-            titleRef={titleBunRef}
-            ingredients={buns}
-            ref={bunsRef}
-          />
-          <IngredientsCategory
-            title='Начинки'
-            titleRef={titleMainRef}
-            ingredients={mains}
-            ref={mainsRef}
-          />
-          <IngredientsCategory
-            title='Соусы'
-            titleRef={titleSaucesRef}
-            ingredients={sauces}
-            ref={saucesRef}
-          />
-        </div>
-      </section>
-    </>
-  )
+import { TBurgerIngredientUIProps } from './type';
+
+export const BurgerIngredientUI: FC<TBurgerIngredientUIProps> = memo(
+  ({ ingredient, count, handleAdd, locationState, dragRef }) => {
+    const { image, price, name, _id } = ingredient;
+
+    return (
+      <li className={styles.container} ref={dragRef}>
+        <Link
+          className={styles.article}
+          to={`/ingredients/${_id}`}
+          state={locationState}
+        >
+          {count && <Counter count={count} />}
+          <img className={styles.img} src={image} alt='картинка ингредиента.' />
+          <div className={`${styles.cost} mt-2 mb-2`}>
+            <p className='text text_type_digits-default mr-2'>{price}</p>
+            <CurrencyIcon type='primary' />
+          </div>
+          <p className={`text text_type_main-default ${styles.text}`}>{name}</p>
+        </Link>
+        <AddButton
+          text='Добавить'
+          onClick={handleAdd}
+          extraClass={`${styles.addButton} mt-8`}
+        />
+      </li>
+    );
+  }
 );
