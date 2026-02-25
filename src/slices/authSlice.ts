@@ -23,6 +23,7 @@ type TAuthState = {
   isLoading: boolean;
   error: string | null;
   isPasswordResetRequested: boolean;
+  isAuthChecked: boolean;
 };
 
 export const initialState: TAuthState = {
@@ -30,7 +31,8 @@ export const initialState: TAuthState = {
   isAuthenticated: false,
   isLoading: false,
   error: null,
-  isPasswordResetRequested: false
+  isPasswordResetRequested: false,
+  isAuthChecked: false
 };
 
 export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
@@ -102,6 +104,8 @@ export const resetPassword = createAsyncThunk(
 
 export const logout = createAsyncThunk('auth/logout', async () => {
   await logoutApi();
+  localStorage.removeItem('refreshToken');
+  deleteCookie('accessToken');
 });
 
 const authSlice = createSlice({
@@ -138,13 +142,22 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      .addCase(checkAuth.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.isAuthChecked = false;
+      })
       .addCase(checkAuth.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.user = action.payload;
         state.isAuthenticated = true;
+        state.isAuthChecked = true;
       })
       .addCase(checkAuth.rejected, (state) => {
+        state.isLoading = false;
         state.user = null;
         state.isAuthenticated = false;
+        state.isAuthChecked = true;
       })
 
       .addCase(updateUser.fulfilled, (state, action) => {
@@ -165,8 +178,6 @@ const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
-        localStorage.removeItem('refreshToken');
-        deleteCookie('accessToken');
       });
   },
 
@@ -175,7 +186,8 @@ const authSlice = createSlice({
     selectIsAuthenticated: (state) => state.isAuthenticated,
     selectIsLoading: (state) => state.isLoading,
     selectError: (state) => state.error,
-    selectIsPasswordResetRequested: (state) => state.isPasswordResetRequested
+    selectIsPasswordResetRequested: (state) => state.isPasswordResetRequested,
+    selectIsAuthChecked: (state) => state.isAuthChecked
   }
 });
 
@@ -184,7 +196,8 @@ export const {
   selectIsAuthenticated,
   selectIsLoading,
   selectError,
-  selectIsPasswordResetRequested
+  selectIsPasswordResetRequested,
+  selectIsAuthChecked
 } = authSlice.selectors;
 
 export const authReducer = authSlice.reducer;

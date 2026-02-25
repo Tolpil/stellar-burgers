@@ -1,13 +1,12 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { Preloader } from '../ui/preloader';
 import { IngredientDetailsUI } from '../ui/ingredient-details';
-import { useSelector, useDispatch } from '../../services/store';
+import { useSelector } from '../../services/store';
 import {
   selectIngredients,
   selectLoading as selectIngredientsLoading
 } from '../../slices/ingredientsSlice';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { fetchIngredients } from '../../slices/ingredientsSlice';
 
 import { TIngredient } from '@utils-types';
 import styles from './ingredient-details.module.css';
@@ -17,7 +16,6 @@ export const IngredientDetails: FC = () => {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const ingredients = useSelector(selectIngredients);
   const isLoading = useSelector(selectIngredientsLoading);
@@ -25,12 +23,6 @@ export const IngredientDetails: FC = () => {
   const ingredientData = ingredients.find((item) => item._id === id);
 
   const backgroundLocation = location.state?.background;
-
-  useEffect(() => {
-    if (!ingredients.length && !isLoading) {
-      dispatch(fetchIngredients());
-    }
-  }, [dispatch, ingredients.length, isLoading]);
 
   if (isLoading || (!ingredientData && ingredients.length > 0)) {
     return <Preloader />;

@@ -12,24 +12,30 @@ import {
 import '../../index.css';
 import styles from './app.module.css';
 
-import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
-import { Route, Routes } from 'react-router-dom';
+import { AppHeader, IngredientDetails, OrderInfo } from '@components';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { ProtectedRoute } from '../protected-route';
 import { useDispatch } from '../../services/store';
 import { useEffect } from 'react';
 import { checkAuth } from '../../slices/authSlice';
+import { fetchIngredients } from '../../slices/ingredientsSlice';
 
 const App = () => {
+  const location = useLocation();
+  const background = location.state?.background;
+  const backgroundLocation =
+    typeof background === 'string' ? { pathname: background } : background;
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(checkAuth());
+    dispatch(fetchIngredients());
   }, [dispatch]);
 
   return (
     <div className={styles.app}>
       <AppHeader />
-      <Routes>
+      <Routes location={backgroundLocation || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
 
@@ -90,19 +96,25 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
-        <Route
-          path='/feed/:number'
-          element={
-            <Modal title='Детали заказа' onClose={() => window.history.back()}>
-              <OrderInfo />
-            </Modal>
-          }
-        />
+        <Route path='/feed/:number' element={<OrderInfo />} />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
 
         <Route path='*' element={<NotFound404 />} />
       </Routes>
+      {backgroundLocation && (
+        <Routes>
+          <Route path='/feed/:number' element={<OrderInfo />} />
+          <Route path='/ingredients/:id' element={<IngredientDetails />} />
+          <Route
+            path='/profile/orders/:number'
+            element={
+              <ProtectedRoute>
+                <OrderInfo />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      )}
     </div>
   );
 };

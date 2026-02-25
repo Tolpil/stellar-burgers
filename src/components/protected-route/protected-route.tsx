@@ -1,7 +1,11 @@
 import { ReactElement } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from '../../services/store';
-import { selectIsAuthenticated } from '../../slices/authSlice';
+import {
+  selectIsAuthenticated,
+  selectIsAuthChecked
+} from '../../slices/authSlice';
+import { Preloader } from '@ui';
 
 type ProtectedRouteProps = {
   children: ReactElement;
@@ -13,7 +17,12 @@ export const ProtectedRoute = ({
   unAuthOnly
 }: ProtectedRouteProps) => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const isAuthChecked = useSelector(selectIsAuthChecked);
   const location = useLocation();
+
+  if (!isAuthChecked) {
+    return <Preloader />;
+  }
 
   if (unAuthOnly && isAuthenticated) {
     const from = location.state?.from || '/';

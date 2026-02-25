@@ -57,16 +57,21 @@ export const BurgerConstructor: FC = () => {
       constructorItems.bun._id
     ];
 
-    orderBurgerApi(ingredientIds).then((response) => {
-      dispatch(setOrderRequest(false));
-
-      dispatch(setOrderModalData(response.order));
-    });
+    orderBurgerApi(ingredientIds)
+      .then((response) => {
+        dispatch(setOrderModalData(response.order));
+        dispatch(resetConstructor());
+      })
+      .catch((error) => {
+        console.error('Failed to place order:', error);
+      })
+      .finally(() => {
+        dispatch(setOrderRequest(false));
+      });
   }, [constructorItems, orderRequest, orderModalData, dispatch, navigate]);
 
   const closeOrderModal = useCallback(() => {
     dispatch(setOrderModalData(null));
-    dispatch(resetConstructor());
   }, [dispatch]);
 
   return (

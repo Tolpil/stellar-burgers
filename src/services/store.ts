@@ -4,14 +4,12 @@ import {
   useDispatch as dispatchHook,
   useSelector as selectorHook
 } from 'react-redux';
-import {
-  fetchIngredients,
-  ingredientsReducer
-} from '../slices/ingredientsSlice';
+import { ingredientsReducer } from '../slices/ingredientsSlice';
 import { burgerConstructorReducer } from '../slices/burgerConstructorSlice';
 import { authReducer } from '../slices/authSlice';
 import { feedReducer } from '../slices/feedSlice';
 import { profileOrdersReducer } from '../slices/profileOrdersSlice';
+import orderInfoReducer from '../slices/orderInfoSlice';
 
 const store = configureStore({
   reducer: {
@@ -19,11 +17,11 @@ const store = configureStore({
     burgerConstructor: burgerConstructorReducer,
     auth: authReducer,
     feed: feedReducer,
-    profileOrders: profileOrdersReducer
+    profileOrders: profileOrdersReducer,
+    orderInfo: orderInfoReducer
   },
   devTools: process.env.NODE_ENV !== 'production'
 });
-store.dispatch(fetchIngredients());
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
