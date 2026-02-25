@@ -19,6 +19,7 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
             `${styles.link} ${isActive ? styles.link_active : ''}`
           }
         >
+<<<<<<< HEAD
           {({ isActive }) => (
             <>
               <BurgerIcon type={isActive ? 'primary' : 'secondary'} />
@@ -27,6 +28,10 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
               </p>
             </>
           )}
+=======
+          <BurgerIcon type={'primary'} />
+          <p className='text text_type_main-default ml-2 mr-10'>Конструктор</p>
+>>>>>>> e805f61991f0739a7c523c1d33d43efff505c115
         </NavLink>
 
         <NavLink

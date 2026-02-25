@@ -72,6 +72,10 @@ export const BurgerConstructor: FC = () => {
 
   const closeOrderModal = useCallback(() => {
     dispatch(setOrderModalData(null));
+<<<<<<< HEAD
+=======
+    dispatch(resetConstructor());
+>>>>>>> e805f61991f0739a7c523c1d33d43efff505c115
   }, [dispatch]);
 
   return (
