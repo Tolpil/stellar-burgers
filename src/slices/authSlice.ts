@@ -178,11 +178,6 @@ const authSlice = createSlice({
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.isAuthenticated = false;
-<<<<<<< HEAD
-=======
-        localStorage.removeItem('refreshToken');
-        deleteCookie('accessToken');
->>>>>>> e805f61991f0739a7c523c1d33d43efff505c115
       });
   },
 

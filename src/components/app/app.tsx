@@ -11,14 +11,8 @@ import {
 } from '@pages';
 import '../../index.css';
 import styles from './app.module.css';
-
-<<<<<<< HEAD
 import { AppHeader, IngredientDetails, OrderInfo } from '@components';
 import { Route, Routes, useLocation } from 'react-router-dom';
-=======
-import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
-import { Route, Routes } from 'react-router-dom';
->>>>>>> e805f61991f0739a7c523c1d33d43efff505c115
 import { ProtectedRoute } from '../protected-route';
 import { useDispatch } from '../../services/store';
 import { useEffect } from 'react';
