@@ -54,7 +54,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html'
     }),
-    new Dotenv()
+    new Dotenv({
+      path: path.resolve(__dirname, './.env.local')
+    })
   ],
   resolve: {
     extensions: [
@@ -89,7 +91,7 @@ module.exports = {
     static: path.join(__dirname, './dist'),
     compress: true,
     historyApiFallback: true,
-    port: 4000,
+    port: 4001,
     open: true
   }
 };

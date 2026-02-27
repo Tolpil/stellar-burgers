@@ -12,7 +12,10 @@ p {
 }
 
 .tab {
-  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 
 .content {
@@ -21,6 +24,7 @@ p {
 
 .menu {
   display: flex;
+  justify-content: center;
   list-style-type: none;
   margin: 0;
   padding: 0;

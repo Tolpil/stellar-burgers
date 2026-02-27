@@ -1,14 +1,53 @@
 import { FC } from 'react';
 import { Preloader } from '../ui/preloader';
 import { IngredientDetailsUI } from '../ui/ingredient-details';
+import { useSelector } from '../../services/store';
+import {
+  selectIngredients,
+  selectLoading as selectIngredientsLoading
+} from '../../slices/ingredientsSlice';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+
+import styles from './ingredient-details.module.css';
+import { Modal } from '../modal';
 
 export const IngredientDetails: FC = () => {
-  /** TODO: взять переменную из стора */
-  const ingredientData = null;
+  const { id } = useParams<{ id: string }>();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  if (!ingredientData) {
+  const ingredients = useSelector(selectIngredients);
+  const isLoading = useSelector(selectIngredientsLoading);
+
+  const ingredientData = ingredients.find((item) => item._id === id);
+
+  const backgroundLocation = location.state?.background;
+  if (isLoading || (!ingredientData && ingredients.length > 0)) {
     return <Preloader />;
   }
 
-  return <IngredientDetailsUI ingredientData={ingredientData} />;
+  if (!ingredientData) {
+    return (
+      <div className='text text_type_main-large p-4'>Ингредиент не найден</div>
+    );
+  }
+
+  const handleClose = () => {
+    navigate(backgroundLocation || '/', { replace: true });
+  };
+
+  if (backgroundLocation) {
+    return (
+      <Modal title='Детали ингредиента' onClose={handleClose}>
+        <IngredientDetailsUI ingredientData={ingredientData} />
+      </Modal>
+    );
+  }
+
+  return (
+    <div className={styles.pageContainer}>
+      <h2 className='text text_type_main-large mb-6'>Детали ингредиента</h2>
+      <IngredientDetailsUI ingredientData={ingredientData} />
+    </div>
+  );
 };
