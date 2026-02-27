@@ -2,14 +2,14 @@ import { FC, useCallback, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useDispatch, useSelector } from '../../services/store';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   resetConstructor,
   setOrderModalData,
   setOrderRequest
 } from '../../slices/burgerConstructorSlice';
+import { selectIsAuthenticated } from '../../slices/authSlice';
 import { orderBurgerApi } from '@api';
-import { getCookie } from '../../utils/cookie';
 
 export const BurgerConstructor: FC = () => {
   const constructorItems = useSelector(
@@ -21,9 +21,11 @@ export const BurgerConstructor: FC = () => {
   const orderModalData = useSelector(
     (state) => state.burgerConstructor.orderModalData
   );
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const price = useMemo(
     () =>
@@ -39,11 +41,8 @@ export const BurgerConstructor: FC = () => {
   const onOrderClick = useCallback(() => {
     if (!constructorItems.bun) return;
 
-    const accessToken = getCookie('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (!accessToken && !refreshToken) {
-      navigate('/login');
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: location }, replace: true });
       return;
     }
 
@@ -59,8 +58,8 @@ export const BurgerConstructor: FC = () => {
 
     orderBurgerApi(ingredientIds)
       .then((response) => {
-        dispatch(setOrderModalData(response.order));
         dispatch(resetConstructor());
+        dispatch(setOrderModalData(response.order));
       })
       .catch((error) => {
         console.error('Failed to place order:', error);
@@ -68,7 +67,15 @@ export const BurgerConstructor: FC = () => {
       .finally(() => {
         dispatch(setOrderRequest(false));
       });
-  }, [constructorItems, orderRequest, orderModalData, dispatch, navigate]);
+  }, [
+    constructorItems,
+    isAuthenticated,
+    location,
+    orderRequest,
+    orderModalData,
+    dispatch,
+    navigate
+  ]);
 
   const closeOrderModal = useCallback(() => {
     dispatch(setOrderModalData(null));

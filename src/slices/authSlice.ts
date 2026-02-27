@@ -35,6 +35,9 @@ export const initialState: TAuthState = {
   isAuthChecked: false
 };
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : 'Unknown error';
+
 export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
   const data = await getUserApi();
   return data.user;
@@ -48,8 +51,8 @@ export const login = createAsyncThunk(
       localStorage.setItem('refreshToken', response.refreshToken);
       setCookie('accessToken', response.accessToken);
       return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -62,8 +65,8 @@ export const register = createAsyncThunk(
       localStorage.setItem('refreshToken', response.refreshToken);
       setCookie('accessToken', response.accessToken);
       return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -74,8 +77,8 @@ export const updateUser = createAsyncThunk(
     try {
       const response = await updateUserApi(data);
       return response.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -85,8 +88,8 @@ export const forgotPassword = createAsyncThunk(
   async (data: TPasswordForgotData, { rejectWithValue }) => {
     try {
       await forgotPasswordApi(data);
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -96,8 +99,8 @@ export const resetPassword = createAsyncThunk(
   async (data: TPasswordResetData, { rejectWithValue }) => {
     try {
       await resetPasswordApi(data);
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
