@@ -1,4 +1,4 @@
-import { authSlice, initialState } from '../authSlice';
+import { authSlice, login, logout, initialState } from '../authSlice';
 
 describe('authSlice', () => {
   it('should return the initial state', () => {
@@ -11,7 +11,7 @@ describe('authSlice', () => {
       email: 'test@example.com'
     };
     const action = {
-      type: authSlice.actions.login.fulfilled.type,
+      type: login.fulfilled.type,
       payload: user
     };
     const state = authSlice.reducer(initialState, action);
@@ -21,7 +21,7 @@ describe('authSlice', () => {
 
   it('should handle logout.fulfilled', () => {
     const action = {
-      type: authSlice.actions.logout.fulfilled.type
+      type: logout.fulfilled.type
     };
     const state = authSlice.reducer(initialState, action);
     expect(state.user).toBeNull();

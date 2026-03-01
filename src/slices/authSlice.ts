@@ -204,3 +204,4 @@ export const {
 } = authSlice.selectors;
 
 export const authReducer = authSlice.reducer;
+export { authSlice };

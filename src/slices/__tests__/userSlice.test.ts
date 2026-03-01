@@ -1,4 +1,4 @@
-import userSlice from '../userSlice';
+import userSlice, { updateUser } from '../userSlice';
 
 describe('userSlice', () => {
   const initialState = {
@@ -18,7 +18,7 @@ describe('userSlice', () => {
       email: 'updated@example.com'
     };
     const action = {
-      type: userSlice.actions.updateUser.fulfilled.type,
+      type: updateUser.fulfilled.type,
       payload: user
     };
     const state = userSlice(initialState, action);
