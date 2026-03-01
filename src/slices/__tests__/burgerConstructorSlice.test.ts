@@ -1,7 +1,16 @@
-import { burgerConstructorSlice, initialState } from '../burgerConstructorSlice';
-import { TConstructorState } from '../../utils/types';
+import { burgerConstructorSlice } from '../burgerConstructorSlice';
+import { TConstructorState } from '@utils-types';
 
 describe('burgerConstructorSlice', () => {
+  const initialState: TConstructorState = {
+    constructorItems: {
+      bun: null,
+      ingredients: []
+    },
+    orderRequest: false,
+    orderModalData: null
+  };
+
   const mockIngredient = {
     id: '1',
     _id: '1',
@@ -31,26 +40,37 @@ describe('burgerConstructorSlice', () => {
   });
 
   it('should handle addIngredient for bun', () => {
-    const action = { type: burgerConstructorSlice.actions.addIngredient.type, payload: { ingredient: mockIngredient } };
+    const action = {
+      type: burgerConstructorSlice.actions.addIngredient.type,
+      payload: { ingredient: mockIngredient }
+    };
     const state = burgerConstructorSlice.reducer(initialState, action);
     expect(state.constructorItems.bun).toEqual(mockIngredient);
   });
 
   it('should handle addIngredient for ingredient', () => {
-    const ingredient = { ...mockIngredient, type: 'main' };
-    const action = { type: burgerConstructorSlice.actions.addIngredient.type, payload: { ingredient } };
+    const ingredient = { ...mockIngredient, type: 'main', id: '2' };
+    const action = {
+      type: burgerConstructorSlice.actions.addIngredient.type,
+      payload: { ingredient }
+    };
     const state = burgerConstructorSlice.reducer(initialState, action);
     expect(state.constructorItems.ingredients).toContainEqual(ingredient);
   });
 
   it('should handle removeIngredient', () => {
-    const action = { type: burgerConstructorSlice.actions.removeIngredient.type, payload: { id: '1' } };
+    const action = {
+      type: burgerConstructorSlice.actions.removeIngredient.type,
+      payload: { id: '1' }
+    };
     const state = burgerConstructorSlice.reducer(mockState, action);
     expect(state.constructorItems.ingredients).toHaveLength(0);
   });
 
   it('should handle resetConstructor', () => {
-    const action = { type: burgerConstructorSlice.actions.resetConstructor.type };
+    const action = {
+      type: burgerConstructorSlice.actions.resetConstructor.type
+    };
     const state = burgerConstructorSlice.reducer(mockState, action);
     expect(state.constructorItems.bun).toBeNull();
     expect(state.constructorItems.ingredients).toHaveLength(0);
