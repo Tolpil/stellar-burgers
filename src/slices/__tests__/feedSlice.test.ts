@@ -1,15 +1,7 @@
-import { feedSlice, fetchFeed } from '../feedSlice';
+import { feedSlice, fetchFeed, initialState } from '../feedSlice';
 import { TOrdersData } from '@utils-types';
 
 describe('feedSlice', () => {
-  const initialState = {
-    orders: [],
-    total: 0,
-    totalToday: 0,
-    isLoading: false,
-    error: null,
-    loaded: false
-  };
 
   it('should return the initial state', () => {
     expect(feedSlice.reducer(undefined, { type: '' })).toEqual(initialState);
