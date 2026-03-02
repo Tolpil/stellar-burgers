@@ -1,77 +1,67 @@
-describe('Тесты для конструктора бургера', () => {
-  beforeEach(() => {
-    // Установим размер экрана для тестов
+/// <reference types="cypress" />
+
+describe('Конструктор бургера', () => {
+  const bun = 'Краторная булка N-200i';
+  const main = 'Биокотлета из марсианской Магнаты';
+
+   beforeEach(() => {
     cy.viewport(1920, 1080);
-    
-    // Посетим главную страницу перед каждым тестом
+    cy.login();
+
+    cy.intercept('GET', '**/api/ingredients', { fixture: 'ingredients.json' }).as('getIngredients');
+    cy.intercept('GET', '**/api/auth/user', { fixture: 'user.json' }).as('getUser');
+    cy.intercept('POST', '/api/orders', { fixture: 'order.json' }).as('createOrder');
+
     cy.visit('/');
+    cy.wait('@getIngredients');
+    cy.wait('@getUser');
   });
 
-  it('Должен отображать список ингредиентов', () => {
-    // Проверим, что ингредиенты отображаются
-    cy.get('[data-cy=ingredient-item]').should('have.length.greaterThan', 0);
+  it('должен добавлять булку и начинку', () => {
+    cy.contains(bun).parent().find('button').click();
+    cy.get('.constructor-element').should('contain', `${bun} (верх)`);
+    cy.get('.constructor-element').should('contain', `${bun} (низ)`);
+
+    cy.contains(main).parent().find('button').click();
+    cy.get('.constructor-element').should('contain', main);
   });
 
-  it('Должен добавлять ингредиенты в конструктор', () => {
-    // Найдем первый ингредиент и кликнем по нему
-    cy.get('[data-cy=ingredient-item]').first().click();
-    
-    // Проверим, что ингредиент добавился в конструктор
-    cy.get('[data-cy=constructor-item]').should('have.length.greaterThan', 0);
+  it('должен открывать и закрывать модальное окно ингредиента', () => {
+    cy.contains(bun).click();
+
+    cy.get('#modals').should('be.exist');
+    cy.get('#modals').contains('Детали ингредиента').should('be.exist');
+    cy.get('#modals').contains(bun).should('be.visible');
+
+    cy.get('[data-cy=modal-overlay]').click({ force: true });
+    cy.get('#modals').should('not.visible');
   });
 
-  it('Должен перемещать ингредиенты в конструкторе', () => {
-    // Добавим несколько ингредиентов
-    cy.get('[data-cy=ingredient-item]').eq(0).click();
-    cy.get('[data-cy=ingredient-item]').eq(1).click();
-    cy.get('[data-cy=ingredient-item]').eq(2).click();
-    
-    // Проверим, что ингредиенты добавились
-    cy.get('[data-cy=constructor-item]').should('have.length', 3);
-    
-    // TODO: Добавить проверку перемещения ингредиентов
-    // (это может потребовать дополнительной настройки draggable тестов)
+  it('должен закрывать модальное окно по клику на крестик', () => {
+    cy.contains(bun).click();
+
+    cy.get('#modals').should('be.exist');
+    cy.get('[data-cy=modal-close]').should('be.exist').click();
+
+    cy.get('#modals').should('not.visible');
   });
 
-  it('Должен удалять ингредиенты из конструктора', () => {
-    // Добавим ингредиент
-    cy.get('[data-cy=ingredient-item]').first().click();
-    
-    // Найдем кнопку удаления и кликнем по ней
-    cy.get('[data-cy=remove-ingredient]').first().click();
-    
-    // Проверим, что ингредиент удалился
-    cy.get('[data-cy=constructor-item]').should('have.length', 0);
-  });
+  it('должен оформить заказ и показать номер', () => {
+    cy.contains(bun).parent().find('button').click();
+    cy.contains(main).parent().find('button').click();
 
-  it('Должен открывать модальное окно с деталями ингредиента', () => {
-    // Кликнем по первому ингредиенту
-    cy.get('[data-cy=ingredient-item]').first().click();
-    
-    // Проверим, что открылось модальное окно
-    cy.get('[data-cy=modal]').should('be.visible');
-    
-    // Проверим наличие информации об ингредиенте
-    cy.get('[data-cy=ingredient-name]').should('be.visible');
-    cy.get('[data-cy=ingredient-calories]').should('be.visible');
-    
-    // Закроем модальное окно
-    cy.get('[data-cy=modal-close]').click();
-    
-    // Проверим, что модальное окно закрылось
-    cy.get('[data-cy=modal]').should('not.exist');
-  });
+    cy.contains('Оформить заказ').click();
 
-  it('Должен оформлять заказ', () => {
-    // Добавим ингредиенты в конструктор
-    cy.get('[data-cy=ingredient-item]').eq(0).click();
-    cy.get('[data-cy=ingredient-item]').eq(1).click();
-    cy.get('[data-cy=ingredient-item]').eq(2).click();
-    
-    // Нажмем кнопку оформления заказа
-    cy.get('[data-cy=order-button]').click();
-    
-    // TODO: Добавить проверку авторизации и оформления заказа
-    // (это может потребовать мокирования API вызовов)
+    cy.wait('@createOrder').its('response.body').then((body) => {
+      expect(body.success).to.be.true;
+      expect(body.order.number).to.eq(58321);
+    });
+
+    cy.get('#modals').contains('58321', { timeout: 10000 }).should('be.visible');
+
+    cy.get('[data-cy=modal-overlay]').click({ force: true });
+    cy.get('#modals').should('not.visible');
+
+    cy.get('.constructor-element').should('have.length.lessThan', 3);
   });
 });
